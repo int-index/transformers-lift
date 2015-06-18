@@ -20,7 +20,7 @@ library
                        Control.Monad.Trans.Lift.Pass
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.7 && <4.9
                ,       transformers >= 0.4.2
                ,       mmorph >= 1.0.4
   hs-source-dirs:      src
