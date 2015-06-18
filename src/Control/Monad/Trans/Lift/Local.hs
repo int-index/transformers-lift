@@ -3,7 +3,10 @@
 module Control.Monad.Trans.Lift.Local
     ( LiftLocal(..)
     , Local
+    , module Control.Monad.Trans.Class
     ) where
+
+import Data.Monoid
 
 import Control.Monad.Trans.Class
 import Control.Monad.Morph
