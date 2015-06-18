@@ -40,7 +40,7 @@ class MonadTrans t => LiftLocal t where
     liftLocal _ l f = hoist (l f)
 
 instance LiftLocal (Cont.ContT r)
-   where liftLocal = Cont.liftLocal
+   where liftLocal a l f = Cont.liftLocal a l f
 
 instance LiftLocal (ExceptT e)
 instance LiftLocal IdentityT
