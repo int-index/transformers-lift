@@ -19,8 +19,6 @@ import qualified Control.Monad.Trans.Except        as E
 import qualified Control.Monad.Trans.Identity      as I
 import qualified Control.Monad.Trans.Maybe         as M
 import qualified Control.Monad.Trans.Reader        as R
-import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
-import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
 import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
 import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
@@ -49,12 +47,6 @@ instance LiftListen (S.Lazy.StateT s) where
 
 instance LiftListen (S.Strict.StateT s) where
     liftListen = S.Strict.liftListen
-
-instance Monoid w' => LiftListen (RWS.Lazy.RWST r w' s) where
-    liftListen = error "TODO"
-
-instance Monoid w' => LiftListen (RWS.Strict.RWST r w' s) where
-    liftListen = error "TODO"
 
 instance Monoid w' => LiftListen (W.Lazy.WriterT w') where
     liftListen listen m = W.Lazy.WriterT $ do
