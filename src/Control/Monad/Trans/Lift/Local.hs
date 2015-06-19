@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE DefaultSignatures #-}
 module Control.Monad.Trans.Lift.Local
@@ -6,7 +7,9 @@ module Control.Monad.Trans.Lift.Local
     , module Control.Monad.Trans.Class
     ) where
 
+#if __GLASGOW_HASKELL__ < 710
 import Data.Monoid
+#endif
 
 import Control.Monad.Trans.Class
 import Control.Monad.Morph

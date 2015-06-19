@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE DefaultSignatures #-}
@@ -7,7 +8,9 @@ module Control.Monad.Trans.Lift.Catch
     , module Control.Monad.Trans.Class
     ) where
 
+#if __GLASGOW_HASKELL__ < 710
 import Data.Monoid
+#endif
 
 import Control.Monad.Signatures
 import Control.Monad.Trans.Class
@@ -18,7 +21,6 @@ import Control.Monad.Trans.Identity
 import Control.Monad.Trans.List
 import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.Reader
-import qualified Control.Monad.Trans.Cont          as Cont
 import qualified Control.Monad.Trans.RWS.Lazy      as Lazy
 import qualified Control.Monad.Trans.RWS.Strict    as Strict
 import qualified Control.Monad.Trans.State.Lazy    as Lazy
@@ -33,8 +35,8 @@ class MonadTrans t => LiftCatch t where
     default liftCatch
         :: (MonadTransControl t, CatchStT t a ~ StT t a, Monad m, Monad (t m))
         => Catch e m (CatchStT t a) -> Catch e (t m) a
-    liftCatch catchE m h = do
-        liftWith (\run -> catchE (run m) (run . h)) >>= restoreT . return
+    liftCatch catch m h = do
+        liftWith (\run -> catch (run m) (run . h)) >>= restoreT . return
 
 instance LiftCatch (ExceptT e)
 instance LiftCatch IdentityT
