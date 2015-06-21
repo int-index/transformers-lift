@@ -36,7 +36,8 @@ class MonadTrans t => LiftCatch t where
         :: (MonadTransControl t, CatchStT t a ~ StT t a, Monad m, Monad (t m))
         => Catch e m (CatchStT t a) -> Catch e (t m) a
     liftCatch catch m h = do
-        liftWith (\run -> catch (run m) (run . h)) >>= restoreT . return
+        st <- liftWith (\run -> catch (run m) (run . h))
+        restoreT (return st)
 
 instance LiftCatch (ExceptT e)
 instance LiftCatch IdentityT
