@@ -1,7 +1,5 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
 module Control.Monad.Trans.Lift.Catch
     ( LiftCatch(..)
     , Catch

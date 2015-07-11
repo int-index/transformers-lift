@@ -1,6 +1,4 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE RankNTypes #-}
 module Control.Monad.Trans.Lift.Listen
     ( LiftListen(..)

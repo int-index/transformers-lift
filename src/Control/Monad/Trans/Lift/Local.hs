@@ -1,6 +1,5 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE DefaultSignatures #-}
 module Control.Monad.Trans.Lift.Local
     ( LiftLocal(..)
     , Local
