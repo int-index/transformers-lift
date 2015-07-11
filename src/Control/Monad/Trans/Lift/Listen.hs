@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
--- | Lift the @listen@ operation.
+-- | Lifting the @listen@ operation.
 module Control.Monad.Trans.Lift.Listen
     ( LiftListen(..)
     , Listen

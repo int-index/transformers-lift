@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
--- | Lift the 'pass' operation.
+-- | Lifting the 'pass' operation.
 module Control.Monad.Trans.Lift.Pass
     ( LiftPass(..)
     , Pass

@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
--- | Lift the 'local' operation.
+-- | Lifting the 'local' operation.
 module Control.Monad.Trans.Lift.Local
     ( LiftLocal(..)
     , Local

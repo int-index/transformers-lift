@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
--- | Lift the @catch@ operation.
+-- | Lifting the @catch@ operation.
 module Control.Monad.Trans.Lift.Catch
     ( LiftCatch(..)
     , Catch

@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
--- | Lift the @callCC@ operation.
+-- | Lifting the @callCC@ operation.
 module Control.Monad.Trans.Lift.CallCC
     ( LiftCallCC(..)
     , CallCC
