@@ -59,7 +59,7 @@ instance LiftListen (S.Strict.StateT s) where
 
 instance Monoid w' => LiftListen (RWS.Lazy.RWST r w' s) where
     liftListen listen m = RWS.Lazy.RWST $ \r s -> do
-        ((a, w', s'), w) <- listen (RWS.Lazy.runRWST m r s)
+        ~((a, w', s'), w) <- listen (RWS.Lazy.runRWST m r s)
         return ((a, w), w', s')
 
 instance Monoid w' => LiftListen (RWS.Strict.RWST r w' s) where
