@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
+-- | Lift the @callCC@ operation.
 module Control.Monad.Trans.Lift.CallCC
     ( LiftCallCC(..)
     , CallCC
@@ -29,40 +30,67 @@ import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 
 import Control.Monad.Trans.Lift.StT
 
+-- | The class of monad transformers capable of lifting 'callCC'.
 class MonadTrans t => LiftCallCC t where
-    liftCallCC, liftCallCC'
-        :: Monad m => CallCC m (StT t a) (StT t b) -> CallCC (t m) a b
+    -- | Lift the @callCC@ operation.
+    -- Should satisfy the uniformity property
+    --
+    -- * @'lift' (f k) = f' ('lift' . k) => 'lift' (cf f) = 'liftCallCC' cf f'@
+    --
+    liftCallCC :: Monad m => CallCC m (StT t a) (StT t b) -> CallCC (t m) a b
 
-defaultLiftCallCC, defaultLiftCallCC'
+    -- | Lift the @callCC@ operation.
+    -- This is an alternative version of 'liftCallCC' included for historical
+    -- reasons. It has a different lifting behavior for the @StateT@ and @RWST@
+    -- monad transformers. Matches what @mtl@ does but doesn't satisfy the
+    -- uniformity property.
+    liftCallCC' :: Monad m => CallCC m (StT t a) (StT t b) -> CallCC (t m) a b
+    liftCallCC' = liftCallCC
+
+-- | Default definition for the 'liftCallCC' method.
+defaultLiftCallCC
     :: (Monad m, LiftCallCC n)
     => (forall x . n m x -> t m x)
+    -- ^ Monad constructor
     -> (forall o x . t o x -> n o x)
+    -- ^ Monad deconstructor
     -> CallCC m (StT n a) (StT n b)
     -> CallCC (t m) a b
 defaultLiftCallCC t unT callCC f
     = t $ liftCallCC callCC (\g -> (unT . f) (t . g))
+
+-- | Default definition for the 'liftCallCC'' method.
+defaultLiftCallCC'
+    :: (Monad m, LiftCallCC n)
+    => (forall x . n m x -> t m x)
+    -- ^ Monad constructor
+    -> (forall o x . t o x -> n o x)
+    -- ^ Monad deconstructor
+    -> CallCC m (StT n a) (StT n b)
+    -> CallCC (t m) a b
 defaultLiftCallCC' t unT callCC f
     = t $ liftCallCC' callCC (\g -> (unT . f) (t . g))
 
 instance LiftCallCC (E.ExceptT e) where
     liftCallCC  = E.liftCallCC
-    liftCallCC' = E.liftCallCC
 
 instance LiftCallCC I.IdentityT where
     liftCallCC  = I.liftCallCC
-    liftCallCC' = I.liftCallCC
 
 instance LiftCallCC L.ListT where
     liftCallCC  = L.liftCallCC
-    liftCallCC' = L.liftCallCC
 
 instance LiftCallCC M.MaybeT where
     liftCallCC  = M.liftCallCC
-    liftCallCC' = M.liftCallCC
 
 instance LiftCallCC (R.ReaderT r) where
     liftCallCC  = R.liftCallCC
-    liftCallCC' = R.liftCallCC
+
+instance Monoid w => LiftCallCC (W.Lazy.WriterT w) where
+    liftCallCC  = W.Lazy.liftCallCC
+
+instance Monoid w => LiftCallCC (W.Strict.WriterT w) where
+    liftCallCC  = W.Strict.liftCallCC
 
 instance Monoid w => LiftCallCC (RWS.Lazy.RWST r w s) where
     liftCallCC  = RWS.Lazy.liftCallCC
@@ -80,10 +108,3 @@ instance LiftCallCC (S.Strict.StateT s) where
     liftCallCC  = S.Strict.liftCallCC
     liftCallCC' = S.Strict.liftCallCC'
 
-instance Monoid w => LiftCallCC (W.Lazy.WriterT w) where
-    liftCallCC  = W.Lazy.liftCallCC
-    liftCallCC' = W.Lazy.liftCallCC
-
-instance Monoid w => LiftCallCC (W.Strict.WriterT w) where
-    liftCallCC  = W.Strict.liftCallCC
-    liftCallCC' = W.Strict.liftCallCC

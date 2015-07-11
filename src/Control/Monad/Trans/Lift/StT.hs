@@ -1,6 +1,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE KindSignatures #-}
-module Control.Monad.Trans.Lift.StT where
+-- | The 'StT' type family.
+module Control.Monad.Trans.Lift.StT (StT) where
 
 import qualified Control.Monad.Trans.Except        as E
 import qualified Control.Monad.Trans.Identity      as I
@@ -14,7 +15,10 @@ import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 
+-- | Internal state of a monad transformer.
+--   Same as @StT@ from the @monad-control@ package.
 type family StT (t :: (* -> *) -> (* -> *)) (a :: *) :: *
+
 type instance StT (E.ExceptT e) a = Either e a
 type instance StT I.IdentityT a = a
 type instance StT L.ListT a = [a]

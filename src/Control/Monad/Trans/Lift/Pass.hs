@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
+-- | Lift the 'pass' operation.
 module Control.Monad.Trans.Lift.Pass
     ( LiftPass(..)
     , Pass
@@ -27,13 +28,22 @@ import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 
 import Control.Monad.Trans.Lift.StT
 
+-- | The class of monad transformers capable of lifting 'pass'.
 class MonadTrans t => LiftPass t where
+    -- | Lift the 'pass' operation.
+    -- Should satisfy the uniformity property
+    --
+    -- * @'lift' . 'liftPass' = 'liftPass' . 'lift'@
+    --
     liftPass :: Monad m => Pass w m (StT t a) -> Pass w (t m) a
 
+-- | Default definition for the 'liftPass' method.
 defaultLiftPass
     :: (Monad m, LiftPass n)
     => (forall x . n m x -> t m x)
+    -- ^ Monad constructor
     -> (forall o x . t o x -> n o x)
+    -- ^ Monad deconstructor
     -> Pass w m (StT n a)
     -> Pass w (t m) a
 defaultLiftPass t unT pass m = t $ liftPass pass (unT m)

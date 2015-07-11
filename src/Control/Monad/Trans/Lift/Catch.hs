@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
+-- | Lift the @catch@ operation.
 module Control.Monad.Trans.Lift.Catch
     ( LiftCatch(..)
     , Catch
@@ -28,13 +29,22 @@ import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 
 import Control.Monad.Trans.Lift.StT
 
+-- | The class of monad transformers capable of lifting 'catch'.
 class MonadTrans t => LiftCatch t where
+    -- | Lift the @catch@ operation.
+    -- Should satisfy the uniformity property
+    --
+    -- * @'lift' (cf m f) = 'liftCatch' ('lift' . cf) ('lift' f)@
+    --
     liftCatch :: Monad m => Catch e m (StT t a) -> Catch e (t m) a
 
+-- | Default definition for the 'liftCatch' method.
 defaultLiftCatch
     :: (Monad m, LiftCatch n)
     => (forall x . n m x -> t m x)
+    -- ^ Monad constructor
     -> (forall o x . t o x -> n o x)
+    -- ^ Monad deconstructor
     -> Catch e m (StT n a) -> Catch e (t m) a
 defaultLiftCatch t unT f m h = t $ liftCatch f (unT m) (unT . h)
 

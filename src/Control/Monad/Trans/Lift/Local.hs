@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
+-- | Lift the 'local' operation.
 module Control.Monad.Trans.Lift.Local
     ( LiftLocal(..)
     , Local
@@ -26,19 +27,23 @@ import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 
+-- | Signature of the @local@ operation,
+-- introduced in "Control.Monad.Trans.Reader".
 type Local r m a = (r -> r) -> m a -> m a
 
+-- | The class of monad transformers capable of lifting 'local'.
 class MonadTrans t => LiftLocal t where
-    liftLocal
-        :: Monad m
-        => m r
-        -> (forall a . Local r    m  a)
-        -> (forall a . Local r (t m) a)
+    -- | Lift the 'local' operation.
+    liftLocal :: Monad m => m r -> (forall a . Local r    m  a)
+                                -> (forall a . Local r (t m) a)
 
+-- | Default definition for the 'liftLocal' method.
 defaultLiftLocal
     :: (Monad m, LiftLocal n)
     => (forall x . n m x -> t m x)
+    -- ^ Monad constructor
     -> (forall o x . t o x -> n o x)
+    -- ^ Monad deconstructor
     -> m r
     -> (forall a . Local r    m  a)
     -> (forall a . Local r (t m) a)

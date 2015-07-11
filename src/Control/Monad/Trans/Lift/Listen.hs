@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE RankNTypes #-}
+-- | Lift the @listen@ operation.
 module Control.Monad.Trans.Lift.Listen
     ( LiftListen(..)
     , Listen
@@ -27,13 +28,22 @@ import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 
 import Control.Monad.Trans.Lift.StT
 
+-- | The class of monad transformers capable of lifting 'listen'.
 class MonadTrans t => LiftListen t where
+    -- | Lift the @listen@ operation.
+    -- Should satisfy the uniformity property
+    --
+    -- * @'lift' . 'liftListen' = 'liftListen' . 'lift'@
+    --
     liftListen :: Monad m => Listen w m (StT t a) -> Listen w (t m) a
 
+-- | Default definition for the `liftListen` method.
 defaultLiftListen
     :: (Monad m, LiftListen n)
     => (forall x . n m x -> t m x)
+    -- ^ Monad constructor
     -> (forall o x . t o x -> n o x)
+    -- ^ Monad deconstructor
     -> Listen w m (StT n a) -> Listen w (t m) a
 defaultLiftListen t unT listen m = t $ liftListen listen (unT m)
 
