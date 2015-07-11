@@ -57,22 +57,22 @@ instance LiftListen (S.Lazy.StateT s) where
 instance LiftListen (S.Strict.StateT s) where
     liftListen = S.Strict.liftListen
 
-instance Monoid w => LiftListen (RWS.Lazy.RWST r w s) where
+instance Monoid w' => LiftListen (RWS.Lazy.RWST r w' s) where
     liftListen listen m = RWS.Lazy.RWST $ \r s -> do
         ((a, w', s'), w) <- listen (RWS.Lazy.runRWST m r s)
         return ((a, w), w', s')
 
-instance Monoid w => LiftListen (RWS.Strict.RWST r w s) where
+instance Monoid w' => LiftListen (RWS.Strict.RWST r w' s) where
     liftListen listen m = RWS.Strict.RWST $ \r s -> do
         ((a, w', s'), w) <- listen (RWS.Strict.runRWST m r s)
         return ((a, w), w', s')
 
-instance Monoid w => LiftListen (W.Lazy.WriterT w) where
+instance Monoid w' => LiftListen (W.Lazy.WriterT w') where
     liftListen listen m = W.Lazy.WriterT $ do
         ~((a, w'), w) <- listen (W.Lazy.runWriterT m)
         return ((a, w), w')
 
-instance Monoid w => LiftListen (W.Strict.WriterT w) where
+instance Monoid w' => LiftListen (W.Strict.WriterT w') where
     liftListen listen m = W.Strict.WriterT $ do
         ((a, w'), w) <- listen (W.Strict.runWriterT m)
         return ((a, w), w')

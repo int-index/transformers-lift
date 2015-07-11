@@ -20,6 +20,8 @@ import qualified Control.Monad.Trans.Except        as E
 import qualified Control.Monad.Trans.Identity      as I
 import qualified Control.Monad.Trans.Maybe         as M
 import qualified Control.Monad.Trans.Reader        as R
+import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
+import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
 import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
 import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
@@ -56,12 +58,22 @@ instance LiftPass (S.Lazy.StateT s) where
 instance LiftPass (S.Strict.StateT s) where
     liftPass = S.Strict.liftPass
 
+instance Monoid w' => LiftPass (RWS.Lazy.RWST r w' s) where
+    liftPass pass m = RWS.Lazy.RWST $ \r s -> pass $ do
+        ~((a, f), w', s') <- RWS.Lazy.runRWST m r s
+        return ((a, w', s'), f)
+
+instance Monoid w' => LiftPass (RWS.Strict.RWST r w' s) where
+    liftPass pass m = RWS.Strict.RWST $ \r s -> pass $ do
+        ((a, f), w', s') <- RWS.Strict.runRWST m r s
+        return ((a, w', s'), f)
+
 instance Monoid w' => LiftPass (W.Lazy.WriterT w') where
     liftPass pass m = W.Lazy.WriterT $ pass $ do
-        ~((a, f), w) <- W.Lazy.runWriterT m
-        return ((a, w), f)
+        ~((a, f), w') <- W.Lazy.runWriterT m
+        return ((a, w'), f)
 
 instance Monoid w' => LiftPass (W.Strict.WriterT w') where
     liftPass pass m = W.Strict.WriterT $ pass $ do
-        ((a, f), w) <- W.Strict.runWriterT m
-        return ((a, w), f)
+        ((a, f), w') <- W.Strict.runWriterT m
+        return ((a, w'), f)
