@@ -1,9 +1,11 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Control.Monad.Trans.Lift.Pass
     ( LiftPass(..)
     , Pass
+    , defaultLiftPass
     , module Control.Monad.Trans.Class
     ) where
 
@@ -13,7 +15,6 @@ import Data.Monoid
 
 import Control.Monad.Signatures
 import Control.Monad.Trans.Class
-import Control.Monad.Trans.Control
 
 import qualified Control.Monad.Trans.Except        as E
 import qualified Control.Monad.Trans.Identity      as I
@@ -24,11 +25,18 @@ import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 
+import Control.Monad.Trans.Lift.StT
+
 class MonadTrans t => LiftPass t where
-    type PassStT t a
-    type PassStT t a = StT t a
-    liftPass :: Monad m => Pass w m (PassStT t a) -> Pass w (t m) a
-    -- TODO: investigate how MonadTransControl can be used for default definition
+    liftPass :: Monad m => Pass w m (StT t a) -> Pass w (t m) a
+
+defaultLiftPass
+    :: (Monad m, LiftPass n)
+    => (forall x . n m x -> t m x)
+    -> (forall o x . t o x -> n o x)
+    -> Pass w m (StT n a)
+    -> Pass w (t m) a
+defaultLiftPass t unT pass m = t $ liftPass pass (unT m)
 
 instance LiftPass (E.ExceptT e) where
     liftPass = E.liftPass

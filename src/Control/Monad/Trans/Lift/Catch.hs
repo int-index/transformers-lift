@@ -1,10 +1,11 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE DefaultSignatures #-}
 module Control.Monad.Trans.Lift.Catch
     ( LiftCatch(..)
     , Catch
+    , defaultLiftCatch
     , module Control.Monad.Trans.Class
     ) where
 
@@ -14,39 +15,60 @@ import Data.Monoid
 
 import Control.Monad.Signatures
 import Control.Monad.Trans.Class
-import Control.Monad.Trans.Control
 
-import Control.Monad.Trans.Except
-import Control.Monad.Trans.Identity
-import Control.Monad.Trans.List
-import Control.Monad.Trans.Maybe
-import Control.Monad.Trans.Reader
-import qualified Control.Monad.Trans.RWS.Lazy      as Lazy
-import qualified Control.Monad.Trans.RWS.Strict    as Strict
-import qualified Control.Monad.Trans.State.Lazy    as Lazy
-import qualified Control.Monad.Trans.State.Strict  as Strict
-import qualified Control.Monad.Trans.Writer.Lazy   as Lazy
-import qualified Control.Monad.Trans.Writer.Strict as Strict
+import qualified Control.Monad.Trans.Except        as E
+import qualified Control.Monad.Trans.Identity      as I
+import qualified Control.Monad.Trans.List          as L
+import qualified Control.Monad.Trans.Maybe         as M
+import qualified Control.Monad.Trans.Reader        as R
+import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
+import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
+import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
+import qualified Control.Monad.Trans.State.Strict  as S.Strict
+import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
+import qualified Control.Monad.Trans.Writer.Strict as W.Strict
+
+import Control.Monad.Trans.Lift.StT
 
 class MonadTrans t => LiftCatch t where
-    type CatchStT t a
-    type CatchStT t a = StT t a
-    liftCatch :: Monad m => Catch e m (CatchStT t a) -> Catch e (t m) a
-    default liftCatch
-        :: (MonadTransControl t, CatchStT t a ~ StT t a, Monad m, Monad (t m))
-        => Catch e m (CatchStT t a) -> Catch e (t m) a
-    liftCatch catch m h = do
-        st <- liftWith (\run -> catch (run m) (run . h))
-        restoreT (return st)
+    liftCatch :: Monad m => Catch e m (StT t a) -> Catch e (t m) a
 
-instance LiftCatch (ExceptT e)
-instance LiftCatch IdentityT
-instance LiftCatch ListT
-instance LiftCatch MaybeT
-instance LiftCatch (ReaderT r)
-instance Monoid w => LiftCatch (Lazy.RWST r w s)
-instance Monoid w => LiftCatch (Strict.RWST r w s)
-instance LiftCatch (Lazy.StateT s)
-instance LiftCatch (Strict.StateT s)
-instance Monoid w => LiftCatch (Lazy.WriterT w)
-instance Monoid w => LiftCatch (Strict.WriterT w)
+defaultLiftCatch
+    :: (Monad m, LiftCatch n)
+    => (forall x . n m x -> t m x)
+    -> (forall o x . t o x -> n o x)
+    -> Catch e m (StT n a) -> Catch e (t m) a
+defaultLiftCatch t unT f m h = t $ liftCatch f (unT m) (unT . h)
+
+instance LiftCatch (E.ExceptT e) where
+    liftCatch f m h = E.ExceptT $ f (E.runExceptT m) (E.runExceptT . h)
+
+instance LiftCatch I.IdentityT where
+    liftCatch = I.liftCatch
+
+instance LiftCatch L.ListT where
+    liftCatch = L.liftCatch
+
+instance LiftCatch M.MaybeT where
+    liftCatch = M.liftCatch
+
+instance LiftCatch (R.ReaderT r) where
+    liftCatch = R.liftCatch
+
+instance Monoid w => LiftCatch (RWS.Lazy.RWST r w s) where
+    liftCatch = RWS.Lazy.liftCatch
+
+instance Monoid w => LiftCatch (RWS.Strict.RWST r w s) where
+    liftCatch = RWS.Strict.liftCatch
+
+instance LiftCatch (S.Lazy.StateT s) where
+    liftCatch = S.Lazy.liftCatch
+
+instance LiftCatch (S.Strict.StateT s) where
+    liftCatch = S.Strict.liftCatch
+
+instance Monoid w => LiftCatch (W.Lazy.WriterT w) where
+    liftCatch = W.Lazy.liftCatch
+
+instance Monoid w => LiftCatch (W.Strict.WriterT w) where
+    liftCatch = W.Strict.liftCatch
