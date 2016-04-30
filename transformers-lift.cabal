@@ -1,5 +1,5 @@
 name:                transformers-lift
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            Ad-hoc type classes for lifting
 description:
     This simple and lightweight library provides type classes
