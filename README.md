@@ -1,5 +1,4 @@
-[![Build Status](https://img.shields.io/travis/int-index/transformers-lift.svg)](https://travis-ci.org/int-index/transformers-lift)
-[![Hackage](https://img.shields.io/hackage/v/transformers-lift.svg)](https://hackage.haskell.org/package/transformers-lift)
+[![Build Status](https://img.shields.io/travis/int-index/mtl-extras.svg)](https://travis-ci.org/int-index/mtl-extras)
+[![Hackage](https://img.shields.io/hackage/v/mtl-extras.svg)](https://hackage.haskell.org/package/mtl-extras)
 
-`transformers-lift` is a simple and lightweight library that provides type
-classes for lifting operations through monad transformers.
+Higher order versions of MTL classes to ease programming with polymorphic recursion and reduce UndecidableInstances. See <http://flint.cs.yale.edu/trifonov/papers/sqcc.pdf> for further discussion of the approach taken here.
