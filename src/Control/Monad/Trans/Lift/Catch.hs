@@ -22,10 +22,13 @@ import qualified Control.Monad.Trans.Maybe         as M
 import qualified Control.Monad.Trans.Reader        as R
 import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
 import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
+import qualified Control.Monad.Trans.RWS.CPS       as RWS.CPS
 import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
 import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
+import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+import qualified Control.Monad.Trans.Accum         as Acc
 
 import Control.Monad.Trans.Lift.StT
 
@@ -50,33 +53,56 @@ defaultLiftCatch t unT f m h = t $ liftCatch f (unT m) (unT . h)
 
 instance LiftCatch (E.ExceptT e) where
     liftCatch f m h = E.ExceptT $ f (E.runExceptT m) (E.runExceptT . h)
+    {-# INLINE liftCatch #-}
 
 instance LiftCatch I.IdentityT where
     liftCatch = I.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance LiftCatch L.ListT where
     liftCatch = L.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance LiftCatch M.MaybeT where
     liftCatch = M.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance LiftCatch (R.ReaderT r) where
     liftCatch = R.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance Monoid w => LiftCatch (RWS.Lazy.RWST r w s) where
     liftCatch = RWS.Lazy.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance Monoid w => LiftCatch (RWS.Strict.RWST r w s) where
     liftCatch = RWS.Strict.liftCatch
+    {-# INLINE liftCatch #-}
+
+instance Monoid w => LiftCatch (RWS.CPS.RWST r w s) where
+    liftCatch = RWS.CPS.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance LiftCatch (S.Lazy.StateT s) where
     liftCatch = S.Lazy.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance LiftCatch (S.Strict.StateT s) where
     liftCatch = S.Strict.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance Monoid w => LiftCatch (W.Lazy.WriterT w) where
     liftCatch = W.Lazy.liftCatch
+    {-# INLINE liftCatch #-}
 
 instance Monoid w => LiftCatch (W.Strict.WriterT w) where
     liftCatch = W.Strict.liftCatch
+    {-# INLINE liftCatch #-}
+
+instance Monoid w => LiftCatch (W.CPS.WriterT w) where
+    liftCatch = W.CPS.liftCatch
+    {-# INLINE liftCatch #-}
+
+instance Monoid w => LiftCatch (Acc.AccumT w) where
+    liftCatch = Acc.liftCatch
+    {-# INLINE liftCatch #-}

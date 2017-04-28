@@ -22,10 +22,13 @@ import qualified Control.Monad.Trans.Maybe         as M
 import qualified Control.Monad.Trans.Reader        as R
 import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
 import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
+import qualified Control.Monad.Trans.RWS.CPS       as RWS.CPS
 import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
 import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
+import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+import qualified Control.Monad.Trans.Accum         as Acc
 
 -- | Signature of the @local@ operation,
 -- introduced in "Control.Monad.Trans.Reader".
@@ -51,36 +54,60 @@ defaultLiftLocal t unT a l f = t . liftLocal a l f . unT
 
 instance LiftLocal (C.ContT r) where
     liftLocal a l f = C.liftLocal a l f
+    {-# INLINE liftLocal #-}
 
 instance LiftLocal (E.ExceptT e) where
     liftLocal _ l f = E.mapExceptT (l f)
+    {-# INLINE liftLocal #-}
 
 instance LiftLocal I.IdentityT where
     liftLocal _ l f = I.mapIdentityT (l f)
+    {-# INLINE liftLocal #-}
 
 instance LiftLocal L.ListT where
     liftLocal _ l f = L.mapListT (l f)
+    {-# INLINE liftLocal #-}
 
 instance LiftLocal M.MaybeT where
     liftLocal _ l f = M.mapMaybeT (l f)
+    {-# INLINE liftLocal #-}
 
 instance LiftLocal (R.ReaderT r) where
     liftLocal _ l f = R.mapReaderT (l f)
+    {-# INLINE liftLocal #-}
 
 instance Monoid w => LiftLocal (RWS.Lazy.RWST r w s) where
     liftLocal _ l f = RWS.Lazy.mapRWST (l f)
+    {-# INLINE liftLocal #-}
 
 instance Monoid w => LiftLocal (RWS.Strict.RWST r w s) where
     liftLocal _ l f = RWS.Strict.mapRWST (l f)
+    {-# INLINE liftLocal #-}
+
+instance Monoid w => LiftLocal (RWS.CPS.RWST r w s) where
+    liftLocal _ l f = RWS.CPS.mapRWST (l f)
+    {-# INLINE liftLocal #-}
 
 instance LiftLocal (S.Lazy.StateT s) where
     liftLocal _ l f = S.Lazy.mapStateT (l f)
+    {-# INLINE liftLocal #-}
 
 instance LiftLocal (S.Strict.StateT s) where
     liftLocal _ l f = S.Strict.mapStateT (l f)
+    {-# INLINE liftLocal #-}
 
 instance Monoid w => LiftLocal (W.Lazy.WriterT w) where
     liftLocal _ l f = W.Lazy.mapWriterT (l f)
+    {-# INLINE liftLocal #-}
 
 instance Monoid w => LiftLocal (W.Strict.WriterT w) where
     liftLocal _ l f = W.Strict.mapWriterT (l f)
+    {-# INLINE liftLocal #-}
+
+instance Monoid w => LiftLocal (W.CPS.WriterT w) where
+    liftLocal _ l f = W.CPS.mapWriterT (l f)
+    {-# INLINE liftLocal #-}
+
+instance Monoid w => LiftLocal (Acc.AccumT w) where
+    liftLocal _ l f = Acc.mapAccumT (l f)
+    {-# INLINE liftLocal #-}
