@@ -23,10 +23,13 @@ import qualified Control.Monad.Trans.Maybe         as M
 import qualified Control.Monad.Trans.Reader        as R
 import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
 import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
+import qualified Control.Monad.Trans.RWS.CPS       as RWS.CPS
 import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
 import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
+import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+import qualified Control.Monad.Trans.Accum         as Acc
 
 import Control.Monad.Trans.Lift.StT
 
@@ -73,38 +76,66 @@ defaultLiftCallCC' t unT callCC f
 
 instance LiftCallCC (E.ExceptT e) where
     liftCallCC  = E.liftCallCC
+    {-# INLINE liftCallCC #-}
 
 instance LiftCallCC I.IdentityT where
     liftCallCC  = I.liftCallCC
+    {-# INLINE liftCallCC #-}
 
 instance LiftCallCC L.ListT where
     liftCallCC  = L.liftCallCC
+    {-# INLINE liftCallCC #-}
 
 instance LiftCallCC M.MaybeT where
     liftCallCC  = M.liftCallCC
+    {-# INLINE liftCallCC #-}
 
 instance LiftCallCC (R.ReaderT r) where
     liftCallCC  = R.liftCallCC
+    {-# INLINE liftCallCC #-}
 
 instance Monoid w => LiftCallCC (W.Lazy.WriterT w) where
     liftCallCC  = W.Lazy.liftCallCC
+    {-# INLINE liftCallCC #-}
 
 instance Monoid w => LiftCallCC (W.Strict.WriterT w) where
     liftCallCC  = W.Strict.liftCallCC
+    {-# INLINE liftCallCC #-}
+
+instance Monoid w => LiftCallCC (W.CPS.WriterT w) where
+    liftCallCC  = W.CPS.liftCallCC
+    {-# INLINE liftCallCC #-}
 
 instance Monoid w => LiftCallCC (RWS.Lazy.RWST r w s) where
     liftCallCC  = RWS.Lazy.liftCallCC
+    {-# INLINE liftCallCC #-}
     liftCallCC' = RWS.Lazy.liftCallCC'
+    {-# INLINE liftCallCC' #-}
 
 instance Monoid w => LiftCallCC (RWS.Strict.RWST r w s) where
     liftCallCC  = RWS.Strict.liftCallCC
+    {-# INLINE liftCallCC #-}
     liftCallCC' = RWS.Strict.liftCallCC'
+    {-# INLINE liftCallCC' #-}
+
+instance Monoid w => LiftCallCC (RWS.CPS.RWST r w s) where
+    liftCallCC  = RWS.CPS.liftCallCC
+    {-# INLINE liftCallCC #-}
+    liftCallCC' = RWS.CPS.liftCallCC'
+    {-# INLINE liftCallCC' #-}
 
 instance LiftCallCC (S.Lazy.StateT s) where
     liftCallCC  = S.Lazy.liftCallCC
+    {-# INLINE liftCallCC #-}
     liftCallCC' = S.Lazy.liftCallCC'
+    {-# INLINE liftCallCC' #-}
 
 instance LiftCallCC (S.Strict.StateT s) where
     liftCallCC  = S.Strict.liftCallCC
+    {-# INLINE liftCallCC #-}
     liftCallCC' = S.Strict.liftCallCC'
+    {-# INLINE liftCallCC' #-}
 
+instance Monoid w => LiftCallCC (Acc.AccumT w) where
+    liftCallCC  = Acc.liftCallCC
+    {-# INLINE liftCallCC #-}

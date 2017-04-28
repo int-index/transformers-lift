@@ -15,16 +15,19 @@ import Data.Monoid
 import Control.Monad.Signatures
 import Control.Monad.Trans.Class
 
-import qualified Control.Monad.Trans.Except        as E
-import qualified Control.Monad.Trans.Identity      as I
-import qualified Control.Monad.Trans.Maybe         as M
-import qualified Control.Monad.Trans.Reader        as R
-import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
-import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
-import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
-import qualified Control.Monad.Trans.State.Strict  as S.Strict
-import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
-import qualified Control.Monad.Trans.Writer.Strict as W.Strict
+import qualified Control.Monad.Trans.Except              as E
+import qualified Control.Monad.Trans.Identity            as I
+import qualified Control.Monad.Trans.Maybe               as M
+import qualified Control.Monad.Trans.Reader              as R
+import qualified Control.Monad.Trans.RWS.Lazy            as RWS.Lazy
+import qualified Control.Monad.Trans.RWS.Strict          as RWS.Strict
+import qualified Control.Monad.Trans.RWS.CPS.Internal    as RWS.CPS
+import qualified Control.Monad.Trans.State.Lazy          as S.Lazy
+import qualified Control.Monad.Trans.State.Strict        as S.Strict
+import qualified Control.Monad.Trans.Writer.Lazy         as W.Lazy
+import qualified Control.Monad.Trans.Writer.Strict       as W.Strict
+import qualified Control.Monad.Trans.Writer.CPS.Internal as W.CPS
+import qualified Control.Monad.Trans.Accum               as Acc
 
 import Control.Monad.Trans.Lift.StT
 
@@ -49,38 +52,64 @@ defaultLiftListen t unT listen m = t $ liftListen listen (unT m)
 
 instance LiftListen (E.ExceptT e) where
     liftListen = E.liftListen
+    {-# INLINE liftListen #-}
 
 instance LiftListen I.IdentityT where
     liftListen = I.mapIdentityT
+    {-# INLINE liftListen #-}
 
 instance LiftListen M.MaybeT where
     liftListen = M.liftListen
+    {-# INLINE liftListen #-}
 
 instance LiftListen (R.ReaderT r) where
     liftListen = R.mapReaderT
+    {-# INLINE liftListen #-}
 
 instance LiftListen (S.Lazy.StateT s) where
     liftListen = S.Lazy.liftListen
+    {-# INLINE liftListen #-}
 
 instance LiftListen (S.Strict.StateT s) where
     liftListen = S.Strict.liftListen
+    {-# INLINE liftListen #-}
 
 instance Monoid w' => LiftListen (RWS.Lazy.RWST r w' s) where
     liftListen listen m = RWS.Lazy.RWST $ \r s -> do
         ~((a, w', s'), w) <- listen (RWS.Lazy.runRWST m r s)
         return ((a, w), w', s')
+    {-# INLINE liftListen #-}
 
 instance Monoid w' => LiftListen (RWS.Strict.RWST r w' s) where
     liftListen listen m = RWS.Strict.RWST $ \r s -> do
         ((a, w', s'), w) <- listen (RWS.Strict.runRWST m r s)
         return ((a, w), w', s')
+    {-# INLINE liftListen #-}
+
+instance Monoid w' => LiftListen (RWS.CPS.RWST r w' s) where
+    liftListen listen m = RWS.CPS.RWST $ \r w_ s -> do
+        ((a, w', s'), w) <- listen (RWS.CPS.unRWST m r w_ s)
+        return ((a, w), w', s')
+    {-# INLINE liftListen #-}
 
 instance Monoid w' => LiftListen (W.Lazy.WriterT w') where
     liftListen listen m = W.Lazy.WriterT $ do
         ~((a, w'), w) <- listen (W.Lazy.runWriterT m)
         return ((a, w), w')
+    {-# INLINE liftListen #-}
 
 instance Monoid w' => LiftListen (W.Strict.WriterT w') where
     liftListen listen m = W.Strict.WriterT $ do
         ((a, w'), w) <- listen (W.Strict.runWriterT m)
         return ((a, w), w')
+    {-# INLINE liftListen #-}
+
+instance Monoid w' => LiftListen (W.CPS.WriterT w') where
+    liftListen listen m = W.CPS.WriterT $ \w_ -> do
+        ((a, w'), w) <- listen (W.CPS.unWriterT m w_)
+        return ((a, w), w')
+    {-# INLINE liftListen #-}
+
+instance Monoid w' => LiftListen (Acc.AccumT w') where
+    liftListen = Acc.liftListen
+    {-# INLINE liftListen #-}
