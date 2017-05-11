@@ -28,7 +28,10 @@ import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+
+#if MIN_VERSION_transformers(0,5,3)
 import qualified Control.Monad.Trans.Accum         as Acc
+#endif
 
 -- | Signature of the @local@ operation,
 -- introduced in "Control.Monad.Trans.Reader".
@@ -108,6 +111,8 @@ instance Monoid w => LiftLocal (W.CPS.WriterT w) where
     liftLocal _ l f = W.CPS.mapWriterT (l f)
     {-# INLINE liftLocal #-}
 
+#if MIN_VERSION_transformers(0,5,3)
 instance Monoid w => LiftLocal (Acc.AccumT w) where
     liftLocal _ l f = Acc.mapAccumT (l f)
     {-# INLINE liftLocal #-}
+#endif

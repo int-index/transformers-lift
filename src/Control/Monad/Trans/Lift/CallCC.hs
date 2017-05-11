@@ -29,7 +29,10 @@ import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+
+#if MIN_VERSION_transformers(0,5,3)
 import qualified Control.Monad.Trans.Accum         as Acc
+#endif
 
 import Control.Monad.Trans.Lift.StT
 
@@ -136,6 +139,8 @@ instance LiftCallCC (S.Strict.StateT s) where
     liftCallCC' = S.Strict.liftCallCC'
     {-# INLINE liftCallCC' #-}
 
+#if MIN_VERSION_transformers(0,5,3)
 instance Monoid w => LiftCallCC (Acc.AccumT w) where
     liftCallCC  = Acc.liftCallCC
     {-# INLINE liftCallCC #-}
+#endif

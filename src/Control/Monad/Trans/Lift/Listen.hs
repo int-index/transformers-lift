@@ -27,7 +27,10 @@ import qualified Control.Monad.Trans.State.Strict        as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy         as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict       as W.Strict
 import qualified Control.Monad.Trans.Writer.CPS.Internal as W.CPS
+
+#if MIN_VERSION_transformers(0,5,3)
 import qualified Control.Monad.Trans.Accum               as Acc
+#endif
 
 import Control.Monad.Trans.Lift.StT
 
@@ -110,6 +113,8 @@ instance Monoid w' => LiftListen (W.CPS.WriterT w') where
         return ((a, w), w')
     {-# INLINE liftListen #-}
 
+#if MIN_VERSION_transformers(0,5,3)
 instance Monoid w' => LiftListen (Acc.AccumT w') where
     liftListen = Acc.liftListen
     {-# INLINE liftListen #-}
+#endif

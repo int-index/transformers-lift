@@ -1,5 +1,7 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE KindSignatures #-}
+
 -- | The 'StT' type family.
 module Control.Monad.Trans.Lift.StT (StT) where
 
@@ -16,7 +18,10 @@ import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+
+#if MIN_VERSION_transformers(0,5,3)
 import qualified Control.Monad.Trans.Accum         as Acc
+#endif
 
 -- | Internal state of a monad transformer.
 --   Same as @StT@ from the @monad-control@ package.
@@ -35,4 +40,7 @@ type instance StT (S.Strict.StateT s) a = (a, s)
 type instance StT (W.Lazy.WriterT w) a = (a, w)
 type instance StT (W.Strict.WriterT w) a = (a, w)
 type instance StT (W.CPS.WriterT w) a = (a, w)
+
+#if MIN_VERSION_transformers(0,5,3)
 type instance StT (Acc.AccumT w) a = (a, w)
+#endif

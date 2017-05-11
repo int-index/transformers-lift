@@ -28,7 +28,10 @@ import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
 import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+
+#if MIN_VERSION_transformers(0,5,3)
 import qualified Control.Monad.Trans.Accum         as Acc
+#endif
 
 import Control.Monad.Trans.Lift.StT
 
@@ -103,6 +106,8 @@ instance Monoid w => LiftCatch (W.CPS.WriterT w) where
     liftCatch = W.CPS.liftCatch
     {-# INLINE liftCatch #-}
 
+#if MIN_VERSION_transformers(0,5,3)
 instance Monoid w => LiftCatch (Acc.AccumT w) where
     liftCatch = Acc.liftCatch
     {-# INLINE liftCatch #-}
+#endif

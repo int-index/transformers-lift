@@ -1,0 +1,7 @@
+flags: {}
+packages:
+- '.'
+resolver: lts-2.22
+extra-deps:
+- transformers-0.4.2.0
+- writer-cps-transformers-0.1.1.3
