@@ -1,6 +1,4 @@
 flags: {}
 packages:
 - '.'
-resolver: lts-8.13
-extra-deps:
-- transformers-0.5.4.0
+resolver: nightly-2018-03-17
