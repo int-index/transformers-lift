@@ -22,7 +22,7 @@ library
                        Control.Monad.Trans.Lift.Pass
                        Control.Monad.Trans.Lift.StT
 
-  build-depends:       base >=4.6 && <4.12
+  build-depends:       base >=4.6 && <4.13
                ,       transformers >= 0.4.2.0
                ,       writer-cps-transformers >= 0.1.1.3
 
