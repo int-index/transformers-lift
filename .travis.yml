@@ -5,8 +5,9 @@ env:
  - CABALVER=1.18 GHCVER=7.8.4
  - CABALVER=1.22 GHCVER=7.10.3
  - CABALVER=1.24 GHCVER=8.0.2
- - CABALVER=1.24 GHCVER=8.2.1
- - CABALVER=1.24 GHCVER=8.4.1
+ - CABALVER=1.24 GHCVER=8.2.2
+ - CABALVER=1.24 GHCVER=8.4.4
+ - CABALVER=1.24 GHCVER=8.6.1
  - CABALVER=head GHCVER=head
 
 before_install:
@@ -30,8 +31,9 @@ addons:
     - ghc-7.8.4
     - ghc-7.10.3
     - ghc-8.0.2
-    - ghc-8.2.1
-    - ghc-8.4.1
+    - ghc-8.2.2
+    - ghc-8.4.4
+    - ghc-8.6.1
     - ghc-head
     - cabal-install-1.18
     - cabal-install-1.22
