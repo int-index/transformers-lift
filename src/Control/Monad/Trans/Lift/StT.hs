@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE KindSignatures #-}
 
@@ -12,12 +13,12 @@ import qualified Control.Monad.Trans.Maybe         as M
 import qualified Control.Monad.Trans.Reader        as R
 import qualified Control.Monad.Trans.RWS.Lazy      as RWS.Lazy
 import qualified Control.Monad.Trans.RWS.Strict    as RWS.Strict
-import qualified Control.Monad.Trans.RWS.CPS       as RWS.CPS
+import qualified "writer-cps-transformers" Control.Monad.Trans.RWS.CPS as RWS.CPS
 import qualified Control.Monad.Trans.State.Lazy    as S.Lazy
 import qualified Control.Monad.Trans.State.Strict  as S.Strict
 import qualified Control.Monad.Trans.Writer.Lazy   as W.Lazy
 import qualified Control.Monad.Trans.Writer.Strict as W.Strict
-import qualified Control.Monad.Trans.Writer.CPS    as W.CPS
+import qualified "writer-cps-transformers" Control.Monad.Trans.Writer.CPS as W.CPS
 
 #if MIN_VERSION_transformers(0,5,3)
 import qualified Control.Monad.Trans.Accum         as Acc
