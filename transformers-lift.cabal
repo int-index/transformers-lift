@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                transformers-lift
-version:             0.2.0.1
+version:             0.2.0.2
 synopsis:            Ad-hoc type classes for lifting
 description:
     This simple and lightweight library provides type classes
